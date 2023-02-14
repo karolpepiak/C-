@@ -1,0 +1,49 @@
+0: Pump Serial Port has been changed to: COM3
+1: Port COM3 is visible
+2: Pump connected
+3: Pump Serial Port has been changed to: COM4
+4: Port COM4 is unvisible
+5: Check cable connection
+6: Pump connected
+7: Pump Serial Port has been changed to: COM5
+8: Port COM5 is visible
+9: Ploter connected
+10: Pumping rate has been changed to: 100 uL/hr
+11: Pumping rate has been changed to: 100 uL/min
+12: Syringe inside diameter has been chaged to: 22mm
+13: Start Position has been changed to X:0 Y:0
+14: Repeat parameter has been changed to: 4 times
+15: template_2.txt import successful
+16: Pump is disconnected 
+17: template_3.txt import successful
+18: Pump is disconnected 
+19: template_1.txt import successful
+20: Ports checked
+21: Pump connected
+22: Ploter connected
+23: Going to corner
+24: Going to Home position
+25: Started pumping
+26: Execute: F1000 G91 G01 X50
+27: Execute: F1000 G91 G01 Y50
+28: Execute: F1000 G91 G01 X-50
+29: Execute: F1000 G91 G01 Y-50
+30: Execute: F1000 G91 G01 X50
+31: Execute: F1000 G91 G01 Y50
+32: Execute: F1000 G91 G01 X-50
+33: Execute: F1000 G91 G01 Y-50
+34: Execute: F1000 G91 G01 X50
+35: Execute: F1000 G91 G01 Y50
+36: Execute: F1000 G91 G01 X-50
+37: Execute: F1000 G91 G01 Y-50
+38: Execute: F1000 G91 G01 X50
+39: Execute: F1000 G91 G01 Y50
+40: Execute: F1000 G91 G01 X-50
+41: Execute: F1000 G91 G01 Y-50
+42: Execute: F1000 G91 G01 X50
+43: Execute: F1000 G91 G01 Y50
+44: Execute: F1000 G91 G01 X-50
+45: Execute: F1000 G91 G01 Y-50
+46: Stoped pumping
+47: Job finished
+
