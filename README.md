@@ -1,4 +1,4 @@
-C#/C-Sharp
+C#
 
 #PloterGUI was created in polish with keeping english variable names.
 Application was made to control work and parameters of plotter EleksLaser A3 Pro and infusion pump NE-1000.
