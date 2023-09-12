@@ -15,9 +15,6 @@ using System.Runtime.InteropServices;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Xml.Linq;
 
-
-
-
 namespace PloterGUI
 {
     public partial class Form1 : Form
@@ -27,7 +24,7 @@ namespace PloterGUI
         SerialPort pump_port;
         SerialPort ploter_port;
 
-        //grupa bool
+        //bools
         bool ploter_connection = false;
         bool pump_connection = false;
         bool temp_bool = false;
@@ -44,7 +41,7 @@ namespace PloterGUI
         //line counter
         public int line_counter = 0;
 
-        //grupa int odpowiedzialna za prace na zmiennych dotyczacych pozycji
+        //intigers responsible for all possitioning operations
         int x_pos = 0;
         int y_pos = 0;
         int pos_of_new_line = 0;
@@ -60,27 +57,27 @@ namespace PloterGUI
         int X_move_value = 0;
         int Y_move_value = 0;
 
-        //grupa int do przesylania parametrow
+        //user input intigers
         int num_of_lines = 0;
         int repeat = 1;
         int template = 0;
         int speed = 0;
         int lenght_of_text = 0;
 
-        //grupa tymczasowych bufforow
+        //temporary buffors
         int intiger_buffor_1 = 0;
         string string_buffor_1 = String.Empty;
         string string_buffor_2 = String.Empty;
         string string_buffor_3 = String.Empty;
 
-        //grupa double
+        //doubles
         double default_pumping_rate = 2.5;
         double pumping_rate = 0;
         double default_syringe_inside_diameter = 22.5;
         double syringe_inside_diameter = 0;
         double pump_work_time_in_sec = 0;
 
-        //grupa string
+        //strings
         string message = string.Empty;
         string pumping_rate_units = String.Empty;
         string pumping_rate_units_to_send = String.Empty;
@@ -88,7 +85,7 @@ namespace PloterGUI
         string ploter_serial_port = String.Empty;
         string path_template = string.Empty;
 
-        //grupa string z nazwami constant
+        //constant strings
         string default_pumping_rate_units = "mL/hr";
         string default_pumping_rate_units_to_send = "MH";
         string path_to_save = Path.Combine(Environment.CurrentDirectory, "Logs.txt");
@@ -99,37 +96,35 @@ namespace PloterGUI
         string template_3 = "template_3.txt";
         string template_4 = "template_4.txt";
 
-        //tablice
+        //tables
         double[] move_value = new double[1000];
         string[] line = new string[1000];
 
-        //sprawdza poprawnosc wprowadzonych nazw portow serial COM
+        //check if input port names are correct
         public void check_port_name(string textbox_info)
         {
-            //sprawdza dlugosc stringow
+            //check string length
             if (textbox_info == null || textbox_info.Length < 3)
             {
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Wrong data format (must be COM# in range 1-100)" + "\r\n";
                 line_counter++;
             }
-            //jak sie zgadzaja
             else
             {
-                //sprawdza nazwe portu
+                //check name
                 string_buffor_2 = textbox_info.Substring(0, 3);
                 intiger_buffor_1 = int.Parse(textbox_info.Substring(3, textbox_info.Length - 3));
                 //sprawdza czy pierwsze 3 litery nazwy portu pompy = "com" z pominieciem wielkosci liter i sprawdza czy numer portu miesci sie pomiedzy 1-100
                 if (textbox_info.IndexOf(serial_port_name, StringComparison.OrdinalIgnoreCase) >= 0 && Enumerable.Range(1, 100).Contains(intiger_buffor_1))
                 {
-                    
-                    //wyswietlanie logow
+                    //display logs
                     this.textBox3.Text = this.textBox3.Text + line_counter + ": Pump Serial Port has been changed to: " + textbox_info.ToUpper() + "\r\n";
                     line_counter++;
                 }
                 else
                 {
-                    //wyswietlanie logow
+                    //display logs
                     this.textBox3.Text = this.textBox3.Text + line_counter + ": Wrong data format for pump port name (must be COM# in range 1-100)" + "\r\n";
                     line_counter++;
                 }
@@ -139,14 +134,14 @@ namespace PloterGUI
             }
         }
 
-        //funkcja tworzaca polaczenie serial z pompa
+        //create serial connection with pump
         public void create_pump_connection()
         {
             pump_serial_port = this.textBox8.Text;
             check_port_name(pump_serial_port);
             try
             {
-                //ustawia parametry polaczenia z pompa
+                //set settings of pump serial connection
                 pump_port = new SerialPort();
                 pump_port.PortName = pump_serial_port.ToUpper();
                 pump_port.BaudRate = 9600;
@@ -159,20 +154,20 @@ namespace PloterGUI
             }
             catch
             {
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Pump port name has not been set" + "\r\n";
                 line_counter++;
             }
         }
 
-        //funkcja tworzaca polaczenie serial z ploterem
+         //create serial connection with plotter
         public void create_ploter_connection()
         {
             ploter_serial_port = this.textBox9.Text;
             check_port_name(ploter_serial_port);
             try
             {
-                //ustawia parametry polaczenia z ploterem
+                //set settings of plotter serial connection
                 ploter_port = new SerialPort();
                 ploter_port.PortName = ploter_serial_port.ToUpper();
                 ploter_port.BaudRate = 115200;
@@ -184,31 +179,31 @@ namespace PloterGUI
             }
             catch
             {
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Ploter port name has not been set" + "\r\n";
                 line_counter++;
             }
         }
         
-        //funkcja probujaca nawiazac polaczenie z pompa
+        //open pump connection
         public void open_pump_connection()
         {
-            //proba otwarcia polaczenia z pompa
+            //tries to open pump connection
             try
             {
                 pump_port.Open();
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Port " + pump_serial_port.ToUpper() + " is visible" + "\r\n";
                 line_counter++;
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Pump connected" + "\r\n";
                 line_counter++;
                 pump_port_connection = true;
             }
-            //przechwycenie nieudanej proby otwarcia polaczenia z pompa
+            //if not able to open connection
             catch (Exception ex)
             {
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Port " + pump_serial_port.ToUpper() + " is unvisible" + "\r\n";
                 line_counter++;
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Check cable connection" + "\r\n";
@@ -219,25 +214,25 @@ namespace PloterGUI
             }
         }
 
-        //funkcja probujaca nawiazac polaczenie z ploterem
+        //open plotter connection
         public void open_ploter_connection()
         {
-            //proba otwarcia polaczenia z ploterem
+            //tries to open pump connection
             try
             {
                 ploter_port.Open();
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Port " + ploter_serial_port.ToUpper() + " is visible" + "\r\n";
                 line_counter++;
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Ploter connected" + "\r\n";
                 line_counter++;
                 ploter_port_connection = true;
             }
-            //przechwycenie nieudanej proby otwarcia polaczenia z ploterem
+            //if not able to open connection
             catch (Exception ex)
             {
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Port " + ploter_serial_port.ToUpper() + " is unvisible" + "\r\n";
                 line_counter++;
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": Check cable connection" + "\r\n";
@@ -246,12 +241,12 @@ namespace PloterGUI
             }
         }
 
-        //liczenie drogi ruchu plotera
+        //calculate movement patch of plotter head
         public void count_path(string  line, int line_index)
         {
             X_move_value = 0;
             Y_move_value = 0;
-            //Jesli ruch odbywa sie zarowno w kierunku osi X i Y
+            //X and Y direction movement
             if (x_move == true && y_move == true)
             {
                 pos_of_X_in_line = line.IndexOf("X");
@@ -259,22 +254,20 @@ namespace PloterGUI
                 end_pos_of_X_value_in_line = string_buffor_1.IndexOf(" ");
                 string_buffor_2 = line.Substring(pos_of_X_in_line, end_pos_of_X_value_in_line);
 
-                //Jezeli jest ruch w kierunku -X
+                //movement in direction -X
                 if (string_buffor_1.IndexOf("-", 0, StringComparison.OrdinalIgnoreCase) != -1)
                 {
                     string_buffor_3 = string_buffor_1.Substring(2, string_buffor_2.Length - 2);
                 }
-                //Jezeli jest ruch w kierunku +X
+                //movement in direction +X
                 else
                 {
                     string_buffor_3 = string_buffor_1.Substring(1, string_buffor_2.Length - 1);
                 }
 
-                //parse z string do int
                 X_move_value = int.Parse(string_buffor_3);
                 x_pos = x_pos + X_move_value;
 
-                //czyszczenie bufforow
                 string_buffor_1 = String.Empty;
                 string_buffor_2 = String.Empty;
                 string_buffor_3 = String.Empty;
@@ -284,99 +277,93 @@ namespace PloterGUI
                 end_pos_of_Y_value_in_line = string_buffor_1.IndexOf("\r\n");
                 string_buffor_2 = line.Substring(pos_of_Y_in_line, end_pos_of_Y_value_in_line);
 
-                //Jezeli jest ruch w kierunku -Y
+                //movement in direction -Y
                 if (string_buffor_1.IndexOf("-", 0, StringComparison.OrdinalIgnoreCase) != -1)
                 {
                     string_buffor_3 = string_buffor_1.Substring(2, string_buffor_2.Length - 2);
                 }
-                //Jezeli jest ruch w kierunku +Y
+                //movement in direction +Y
                 else
                 {
                     string_buffor_3 = string_buffor_1.Substring(1, string_buffor_2.Length - 1);
                 }
 
-                //parse z string do int
                 Y_move_value = int.Parse(string_buffor_3);
                 y_pos = y_pos + Y_move_value;
 
-                //czyszczenie bufforow
                 string_buffor_1 = String.Empty;
                 string_buffor_2 = String.Empty;
                 string_buffor_3 = String.Empty;
 
-                //obliczanie drogi dla danej linii
+                //calculating path
                 move_value[line_index] = Math.Sqrt((Y_move_value * Y_move_value) + (X_move_value * X_move_value)); 
             }
-            //Jesli ruch odbywa sie w kierunku osi X
+            //only X direction movement
             else if (x_move == true && y_move == false)
             {
                 pos_of_X_in_line = line.IndexOf("X");
                 string_buffor_1 = line.Substring(pos_of_X_in_line, line.Length - pos_of_X_in_line);
                 end_pos_of_X_value_in_line = string_buffor_1.IndexOf("\r\n");
 
-                //Jezeli jest ruch w kierunku -X
+                //movement in direction -X
                 if (string_buffor_1.IndexOf("-", 0, StringComparison.OrdinalIgnoreCase) != -1)
                 {
                     string_buffor_2 = string_buffor_1.Substring(2, string_buffor_1.Length - end_pos_of_X_value_in_line);
                 }
-                //Jezeli jest ruch w kierunku +X
+                //movement in direction +X
                 else
                 {
                     string_buffor_2 = string_buffor_1.Substring(1, string_buffor_1.Length - end_pos_of_X_value_in_line);
                 }
 
-                //parse z string do int
                 X_move_value = int.Parse(string_buffor_2);
                 x_pos = x_pos + X_move_value;
 
-                //czyszczenie bufforow
                 string_buffor_1 = String.Empty;
                 string_buffor_2 = String.Empty;
 
-                //obliczanie drogi dla danej linii
+                //calculating path
                 move_value[line_index] = X_move_value;
             }
-            //Jesli ruch odbywa sie w kierunku osi Y
+            //only Y direction movement
             else if (x_move == false && y_move == true)
             {
                 pos_of_Y_in_line = line.IndexOf("Y");
                 string_buffor_1 = line.Substring(pos_of_Y_in_line, line.Length - pos_of_Y_in_line);
                 end_pos_of_Y_value_in_line = string_buffor_1.IndexOf("\r\n");
 
-                //Jezeli jest ruch w kierunku -Y
+                //movement in direction -Y
                 if (string_buffor_1.IndexOf("-", 0, StringComparison.OrdinalIgnoreCase) != -1)
                 {
                     string_buffor_2 = string_buffor_1.Substring(2, string_buffor_1.Length - end_pos_of_Y_value_in_line);
                 }
-                //Jezeli jest ruch w kierunku +Y
+                //movement in direction +Y
                 else
                 {
                     string_buffor_2 = string_buffor_1.Substring(1, string_buffor_1.Length - end_pos_of_Y_value_in_line);
                 }
 
-                //parse z string do int
                 Y_move_value = int.Parse(string_buffor_2);
                 y_pos = y_pos + Y_move_value;
 
-                //czyszczenie bufforow
                 string_buffor_1 = String.Empty;
                 string_buffor_2 = String.Empty;
 
-                //obliczanie drogi dla danej linii
+                //calculating path
                 move_value[line_index] = Y_move_value;
             }
         }
 
-        ////funkcja importujaca plik .txt
+        //import .txt file
         public void import_file(string file_name)
         {
             try
             {
-                //czysci okno komend
+                //clear textbox
                 this.textBox1.Clear();
-                //Przypisanie sciezki do pliku
+                //get path name
                 path_template = Path.Combine(Environment.CurrentDirectory, file_name);
-                //chowa panel template
+                //hide template panel
                 hide_submenu();
                 using (StreamReader sr = File.OpenText(path_template))
                 {
@@ -386,19 +373,19 @@ namespace PloterGUI
                     }
                 }
                 string_buffor_1 = string.Empty;
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": " + file_name + " import successful" + "\r\n";
                 line_counter++;
             }
             catch
             {
-                //wyswietlanie logow
+                //display logs
                 this.textBox3.Text = this.textBox3.Text + line_counter + ": " + file_name + " import unsuccessful" + "\r\n";
                 line_counter++;
             }
         }
 
-        //inicjalizuje Form1
+        //initializes Form1
         public Form1()
         {
             InitializeComponent();
@@ -406,13 +393,13 @@ namespace PloterGUI
             instance = this;
         }
 
-        //zmienia widocznosc panelu template
+        //changes visibility of template panel
         private void panel_visible()
         {
             panel1.Visible = false;
         }
 
-        //chowa panel template
+        //hide template panel
         private void hide_submenu()
         {
             if(panel1.Visible == true)
@@ -421,7 +408,7 @@ namespace PloterGUI
             }
         }
 
-        //pokazuje panel template
+        //show template panel
         private void show_submenu()
         {
             if(panel1.Visible == false)
@@ -430,82 +417,78 @@ namespace PloterGUI
             }
         }
 
-        //Parametry pompy - label
+        //Pump parametres - label
         private void label1_Click(object sender, EventArgs e)
         {
 
         }
 
-        //Ustaw szybkosc pompowania - label
+        //Set pumping rate - label
         private void label2_Click(object sender, EventArgs e)
         {
 
         }
 
-        //Ustaw szybkosc pompowania - button
+        //Set pumping rate - button
         private void button1_Click(object sender, EventArgs e)
         {
             try
             {
                 if (pump_port_connection == false)
                 {
-                    //proba utworzenia danych portu
+                    //tries to create pump connection
                     create_pump_connection();
-                    //proba otwarcia portu
+                    //tries to open pump connection
                     open_pump_connection();
                 }
 
-                //bool z informacja czy textBox4 zawiera jakies dane
+                //set bool if textBox4 have any text
                 temp_bool = String.IsNullOrEmpty(this.textBox4.Text);
 
-                //jesli jest pusty
+                //if empty
                 if (temp_bool == true)
                 {
                     set_pumping_rate = false;
                 }
-                //jesli zawiera
                 else
                 {
                     string_buffor_1 = this.textBox4.Text;
                     try
                     {
                         set_pumping_rate = true;
-                        //parse z string do double
                         pumping_rate = double.Parse(string_buffor_1);
-                        //zaokraglenie do dwuch miejsc po przecinku
                         pumping_rate = Math.Round(pumping_rate, 2);
                     }
                     catch
                     {
                         set_pumping_rate = false;
-                        //wyswietlanie logow
+                        //display logs
                         this.textBox3.Text = this.textBox3.Text + line_counter + ": Could not parse: " + pumping_rate.ToString() + " to double format" + "\r\n";
                         line_counter++;
                     }
                 }
 
-                //jesli zaznaczono jednostki
+                //if units checked
                 if (this.checkBox1.Checked || this.checkBox2.Checked || this.checkBox3.Checked || this.checkBox4.Checked)
                 {
-                    //zmienione ustawienie jednostek
                     set_pumping_rate_units = true;
 
-                    //jesli zaznaczono uL/min
+                    //If uL/min checked
                     if (this.checkBox1.Checked)
                     {
                         pumping_rate_units_to_send = "UM";
                     }
-                    //jesli zaznaczono mL/min
+                    //If mL/min checked
                     else if (this.checkBox2.Checked)
                     {
                         pumping_rate_units_to_send = "MM";
                     }
-                    //jesli zaznaczono uL/hr
+                    //If uL/hr checked
                     else if (this.checkBox3.Checked)
                     {
                         pumping_rate_units_to_send = "UH";
                     }
-                    //jesli zaznaczono mL/hr
+                    //If mL/hr checked
                     else
                     {
                         pumping_rate_units_to_send = "MH";
@@ -513,17 +496,17 @@ namespace PloterGUI
                 }
                 else
                 {
-                    //defaultowe ustawienie jednostek
+                    //default settings
                     set_pumping_rate_units = false;
                 }
 
-                //jezeli nie ustawiono szybkosci pompowania
+                //pumping rate not set
                 if (set_pumping_rate == false)
                 {
                     pumping_rate = default_pumping_rate;
                 }
 
-                //jezeli nie ustawiono jednostek szybkosci pompowania
+                //pumping rate units not set
                 if (set_pumping_rate_units == false)
                 {
                     pumping_rate_units_to_send = default_pumping_rate_units_to_send;
@@ -537,9 +520,10 @@ namespace PloterGUI
                         string_buffor_1 = pumping_rate.ToString().Substring(0, pos_of_dot);
                         string_buffor_2 = pumping_rate.ToString().Substring(pos_of_dot + 1, pumping_rate.ToString().Length - (pos_of_dot + 1));
                         string_buffor_3 = string_buffor_1 + "." + string_buffor_2;
-                        //Przeslanie danych na wejscie pompy
+                        
+                        //Send data to pump
                         pump_port.WriteLine(String.Format("RAT I " + string_buffor_3 + " " + pumping_rate_units_to_send + "\r\n"));
-                        //wyswietlanie logow
+                        //display logs
                         this.textBox3.Text = this.textBox3.Text + line_counter + ": Pumping rate has been changed to: " + string_buffor_3 + " " + pumping_rate_units + "\r\n";
                         line_counter++;
                     }
